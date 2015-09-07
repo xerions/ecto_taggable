@@ -1,0 +1,2 @@
+defmodule EctoTaggable do
+end
