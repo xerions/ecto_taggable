@@ -12,27 +12,29 @@ defmodule Ecto.Taggable.Api do
         case Map.fetch(result, tag_field) do
           :error ->
             insert_tag(repo, tag_field, tagname, model)
-          {_, tag_list} ->
+          {:ok, tag_list} ->
             add_tag_if_not_exists(repo, tag_field, tag_list, model, tagname)
         end
     end
   end
 
   @spec search_tag(Ecto.Repo.t, Ecto.Model.t, atom) :: [Ecto.Model.t]
-  def search_tag(repo, model, tagname) do   
+  def search_tag(repo, model, tagname) do
     tag_field = find_taggable_assoc(model, model.__schema__(:associations))
     (from t in model, join: tags in assoc(t, ^tag_field), where: tags.name == ^(tagname |> Atom.to_string)) |> repo.all
   end
 
-  @spec search_tag(Ecto.Repo.t, Ecto.Model.t, atom) :: :ok | :not_found
+  @spec drop_tag(Ecto.Repo.t, Ecto.Model.t, atom) :: :ok | :not_found
   def drop_tag(repo, model, tagname) do
     tag_field = find_taggable_assoc(model, model.__schema__(:associations))
-    case (from t in model, join: tags in assoc(t, ^tag_field), where: tags.name == ^(tagname |> Atom.to_string)) |> repo.all do
-      [result] ->
-        result |> repo.delete
-        :ok
-      _ ->
+    case (from t in model, join: tags in assoc(t, ^tag_field), where: tags.name == ^(tagname |> Atom.to_string), preload: [^tag_field]) |> repo.all do
+      [] ->
         :not_found
+      result ->
+        for record <- result do
+          repo.delete!(record.tags |> Enum.at(0))
+        end
+        :ok
     end
   end
 
@@ -82,7 +84,7 @@ defmodule Ecto.Taggable.Api do
                       model.__schema__(:association, assoc)
                   end
 
-    case association.assoc do
+    case association.related do
       :'Elixir.Ecto.Taggable' ->
         association.field
       _ ->
