@@ -21,39 +21,43 @@ defmodule EctoTaggableTest do
     {:ok, res3} = EctoIt.Repo.insert(%TestModel{a: "test3", b: 3, c: false})
     {:ok, res4} = EctoIt.Repo.insert(%TestModel{a: "test4", b: 4, c: true})
 
-    set_tag1 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res1, :mytag)
-    set_tag2 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res2, :mytag)
-    set_tag3 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res2, :mytag)
-    set_tag4 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res4, :my_another_tag)
-    set_tag5 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, %TestModel{id: 100}, :bad_tag)
+    set_tag1 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res1, :mytag, "test_val_1")
+    set_tag2 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res2, :mytag, "test_val_2")
+    set_tag3 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res2, :mytag, "test_val_2")
+    set_tag4 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, res4, :my_another_tag, "another_val")
+    set_tag5 = Ecto.Taggable.Api.set_tag(EctoIt.Repo, %TestModel{id: 100}, :bad_tag, "bad_tag")
 
-    #assert set_tag1 == :ok
-    assert set_tag2 == :ok
+    assert set_tag1 == %{id: 1}
+    assert set_tag2 == %{id: 2}
     assert set_tag3 == :already_tagged
-    assert set_tag4 == :ok
+    assert set_tag4 == %{id: 3}
     assert set_tag5 == :id_not_exists
 
-    bad_tag  = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag2)
-    [good_tag1, good_tag2] = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag)
-
+    bad_tag  = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag2, "val_val")
     assert bad_tag == []
 
-    assert good_tag1.a == "test1"
-    assert good_tag1.b == 1
-    assert good_tag1.c == false
-    assert good_tag1.id == 1
-
-    assert good_tag2.a == "test2"
-    assert good_tag2.b == 2
-    assert good_tag2.c == true
-    assert good_tag2.id == 2
+    [good_tag] = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag, "test_val_1")
+    assert good_tag.a == "test1"
+    assert good_tag.b == 1
+    assert good_tag.c == false
+    assert good_tag.id == 1
 
     # test tag deletion
-    good_tag = Ecto.Taggable.Api.drop_tag(EctoIt.Repo, TestModel, :mytag)
-    deleted_tag = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag)
+    good_tag = Ecto.Taggable.Api.drop_tag(EctoIt.Repo, %TestModel{id: 1}, :mytag, "test_val_1")
+    assert good_tag == %{id: 1}
+    [deleted_tag] = Ecto.Taggable.Api.search_tag(EctoIt.Repo, TestModel, :mytag, "test_val_2")
 
-    assert good_tag == :ok
-    assert bad_tag == []
+    assert deleted_tag.a == "test2"
+    assert deleted_tag.b == 2
+    assert deleted_tag.c == true
+    assert deleted_tag.id == 2
+
+    good_tag = Ecto.Taggable.Api.drop_tag(EctoIt.Repo, TestModel, :mytag, "test_val_2")
+    bad_tag = Ecto.Taggable.Api.drop_tag(EctoIt.Repo, TestModel, :mytag, "test_val_2")
+
+    assert good_tag = :ok
+    assert bad_tag = []
+
     :ok = :application.stop(:ecto_it)
   end
 end

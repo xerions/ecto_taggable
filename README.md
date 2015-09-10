@@ -37,8 +37,14 @@ Ecto.Taggable.set_tag(repo, my_model2 :tag_name)
 Ecto.Taggable.search_tag(repo, MyModel, :tag_name) % ==> %MyModel{name: "bar", ...}
 ```
 
-and delete tag with:
+and delete tag for all recrods with:
 
 ```elixir
 Ecto.Taggable.Api.drop_tag(EctoIt.Repo, MyModel, :tag_name)
+```
+
+or for the certain `id`:
+
+```elixir
+Ecto.Taggable.Api.drop_tag(EctoIt.Repo, %MyModel{id: 1}, :tag_name)
 ```

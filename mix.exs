@@ -3,8 +3,8 @@ defmodule EctoTaggable.Mixfile do
 
   def project do
     [app: :ecto_taggable,
+     elixir: ">= 1.0.5",
      version: "0.0.1",
-     elixir: "~> 1.0.5",
      deps: deps]
   end
 
