@@ -3,8 +3,8 @@ defmodule EctoTaggable.Mixfile do
 
   def project do
     [app: :ecto_taggable,
+     elixir: ">= 1.0.5",
      version: "0.0.1",
-     elixir: "~> 1.1-dev",
      deps: deps]
   end
 
@@ -27,8 +27,8 @@ defmodule EctoTaggable.Mixfile do
   defp deps do
     [{:postgrex, ">= 0.0.0", optional: true},
      {:mariaex, ">= 0.0.0", optional: true},
-     {:ecto, "~> 0.10.1"},
+     {:ecto, "~> 0.16.0", optional: true},
      {:ecto_migrate, git: "https://github.com/xerions/ecto_migrate"},
-		 {:ecto_it, git: "https://github.com/xerions/ecto_it"}]
+     {:ecto_it, git: "https://github.com/xerions/ecto_it", override: true}]
   end
 end
