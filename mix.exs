@@ -29,6 +29,6 @@ defmodule EctoTaggable.Mixfile do
      {:mariaex, ">= 0.0.0", optional: true},
      {:ecto, "~> 0.16.0", optional: true},
      {:ecto_migrate, git: "https://github.com/xerions/ecto_migrate"},
-     {:ecto_it, git: "https://github.com/xerions/ecto_it", override: true}]
+     {:ecto_it, git: "https://github.com/xerions/ecto_it", override: true, only: :test}]
   end
 end
