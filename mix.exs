@@ -27,8 +27,8 @@ defmodule EctoTaggable.Mixfile do
   defp deps do
     [{:postgrex, ">= 0.0.0", optional: true},
      {:mariaex, ">= 0.0.0", optional: true},
-     {:ecto, "~> 0.16.0", optional: true},
-     {:ecto_migrate, git: "https://github.com/xerions/ecto_migrate"},
-     {:ecto_it, git: "https://github.com/xerions/ecto_it", override: true, only: :test}]
+     {:ecto, "~> 1.0.0"},
+     {:ecto_migrate, "~> 0.6.2"},
+     {:ecto_it, "~> 0.2.0", optional: true}]
   end
 end
